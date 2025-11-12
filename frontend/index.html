@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Forecasting Platform | Corporate Analytics</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <h2 class="loader-text">Initializing Enterprise Platform</h2>
+            <p class="loader-subtext">Loading advanced analytics modules...</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-chart-line logo-icon"></i>
+                <div class="logo-text">
+                    <span class="logo-title">Enterprise Forecasting</span>
+                    <span class="logo-subtitle">Corporate Analytics Platform</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="header-center">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search models, insights, analytics...">
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <button class="btn-upload" id="uploadCsvBtn">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Upload Data</span>
+            </button>
+            
+            <button class="btn-export" id="exportBtn">
+                <i class="fas fa-file-download"></i>
+                <span>Export</span>
+            </button>
+            
+            <div class="user-menu">
+                <img src="https://ui-avatars.com/api/?name=Corporate+User&background=1E3A8A&color=fff" alt="User" class="user-avatar">
+                <span class="user-name">Corporate User</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-sliders-h"></i> Configuration</h3>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-content">
+                
+                <!-- Data Source -->
+                <div class="config-section">
+                    <div class="section-header">
+                        <i class="fas fa-database"></i>
+                        <span>Data Source</span>
+                    </div>
+                    <div class="data-source-info" id="dataSourceInfo">
+                        <div class="source-badge">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="currentSource">Default Dataset</span>
+                        </div>
+                        <div class="source-details">
+                            <small id="fileName">monthly_sales.csv</small>
+                            <small id="dataPoints">Loading...</small>
+                        </div>
+                    </div>
+                    <button class="btn-change-source" id="changeSourceBtn">
+                        <i class="fas fa-exchange-alt"></i>
+                        Change Data Source
+                    </button>
+                </div>
+
+                <!-- Test Configuration -->
+                <div class="config-section">
+                    <div class="section-header">
+                        <i class="fas fa-cog"></i>
+                        <span>Test Configuration</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="testSize">Test Set Size (Months)</label>
+                        <div class="slider-container">
+                            <input type="range" id="testSize" class="slider" min="2" max="6" value="3">
+                            <span class="slider-value" id="testSizeValue">3</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="forecastHorizon">Forecast Horizon (Months)</label>
+                        <div class="slider-container">
+                            <input type="range" id="forecastHorizon" class="slider" min="1" max="12" value="3">
+                            <span class="slider-value" id="forecastHorizonValue">3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Selection -->
+                <div class="config-section">
+                    <div class="section-header">
+                        <i class="fas fa-brain"></i>
+                        <span>Models to Analyze</span>
+                    </div>
+                    <div class="models-checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="modelNaive" checked>
+                            <label for="modelNaive">Naïve Model</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="modelArima" checked>
+                            <label for="modelArima">ARIMA</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="modelRF" checked>
+                            <label for="modelRF">Random Forest</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="modelXGB" checked>
+                            <label for="modelXGB">XGBoost</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn-primary" id="runAnalysisBtn">
+                        <i class="fas fa-play"></i>
+                        Run Comprehensive Analysis
+                    </button>
+                    <button class="btn-secondary" id="resetBtn">
+                        <i class="fas fa-redo"></i>
+                        Reset Configuration
+                    </button>
+                </div>
+
+                <!-- Status -->
+                <div class="status-indicator">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span class="status-text" id="statusText">Ready</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Hero Section (Landing Page) -->
+            <section class="hero-section">
+                <div class="hero-content">
+                    <h1 class="hero-title">Advanced Sales Forecasting & Analytics</h1>
+                    <p class="hero-subtitle">
+                        Enterprise-grade time series forecasting powered by Machine Learning and AI. 
+                        Leverage multiple models to predict future sales with unprecedented accuracy.
+                    </p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fas fa-chart-line stat-icon"></i>
+                            <div class="stat-label">Average Monthly Sales</div>
+                            <div class="stat-value" id="statAvgSales">Loading...</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-percentage stat-icon"></i>
+                            <div class="stat-label">Overall Growth Rate</div>
+                            <div class="stat-value" id="statGrowth">Loading...</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-calendar-check stat-icon"></i>
+                            <div class="stat-label">Data Coverage Period</div>
+                            <div class="stat-value" id="statPeriod">Loading...</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-brain stat-icon"></i>
+                            <div class="stat-label">ML Models Available</div>
+                            <div class="stat-value">4 Models</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Model Information Section -->
+            <section class="model-info-section">
+                <h2 class="section-title">Available Forecasting Models</h2>
+                <p class="section-description">
+                    Our platform leverages four distinct forecasting approaches, from statistical baselines to advanced machine learning algorithms, 
+                    ensuring robust and reliable predictions for your business needs.
+                </p>
+                
+                <div class="model-cards-grid">
+                    <!-- Naïve Model -->
+                    <div class="model-info-card">
+                        <div class="model-info-header">
+                            <div class="model-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div>
+                                <div class="model-name">Naïve Forecast</div>
+                                <div class="model-type">Baseline Model</div>
+                            </div>
+                        </div>
+                        <p class="model-description">
+                            A simple yet effective baseline method that uses the most recent observation as the forecast. 
+                            Essential for benchmarking more complex models.
+                        </p>
+                        <ul class="model-features">
+                            <li><i class="fas fa-check-circle"></i> Fast computation</li>
+                            <li><i class="fas fa-check-circle"></i> Robust baseline</li>
+                            <li><i class="fas fa-check-circle"></i> No parameters required</li>
+                        </ul>
+                    </div>
+
+                    <!-- ARIMA -->
+                    <div class="model-info-card">
+                        <div class="model-info-header">
+                            <div class="model-icon">
+                                <i class="fas fa-wave-square"></i>
+                            </div>
+                            <div>
+                                <div class="model-name">ARIMA</div>
+                                <div class="model-type">Statistical Model</div>
+                            </div>
+                        </div>
+                        <p class="model-description">
+                            Auto-Regressive Integrated Moving Average captures trends and seasonality through 
+                            sophisticated time series analysis techniques.
+                        </p>
+                        <ul class="model-features">
+                            <li><i class="fas fa-check-circle"></i> Trend detection</li>
+                            <li><i class="fas fa-check-circle"></i> Seasonality capture</li>
+                            <li><i class="fas fa-check-circle"></i> Statistical rigor</li>
+                        </ul>
+                    </div>
+
+                    <!-- Random Forest -->
+                    <div class="model-info-card">
+                        <div class="model-info-header">
+                            <div class="model-icon">
+                                <i class="fas fa-tree"></i>
+                            </div>
+                            <div>
+                                <div class="model-name">Random Forest</div>
+                                <div class="model-type">Ensemble ML Model</div>
+                            </div>
+                        </div>
+                        <p class="model-description">
+                            Ensemble learning method using multiple decision trees to capture complex non-linear 
+                            relationships in your sales data.
+                        </p>
+                        <ul class="model-features">
+                            <li><i class="fas fa-check-circle"></i> Feature importance</li>
+                            <li><i class="fas fa-check-circle"></i> Non-linear patterns</li>
+                            <li><i class="fas fa-check-circle"></i> Robust to outliers</li>
+                        </ul>
+                    </div>
+
+                    <!-- XGBoost -->
+                    <div class="model-info-card">
+                        <div class="model-info-header">
+                            <div class="model-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div>
+                                <div class="model-name">XGBoost</div>
+                                <div class="model-type">Advanced ML Model</div>
+                            </div>
+                        </div>
+                        <p class="model-description">
+                            State-of-the-art gradient boosting algorithm known for winning machine learning competitions 
+                            and delivering superior predictive accuracy.
+                        </p>
+                        <ul class="model-features">
+                            <li><i class="fas fa-check-circle"></i> Highest accuracy</li>
+                            <li><i class="fas fa-check-circle"></i> Advanced optimization</li>
+                            <li><i class="fas fa-check-circle"></i> Regularization built-in</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab Navigation -->
+            <nav class="tab-navigation">
+                <button class="tab-btn active" data-tab="overview">
+                    <i class="fas fa-tachometer-alt"></i> Overview
+                </button>
+                <button class="tab-btn" data-tab="dataExploration">
+                    <i class="fas fa-database"></i> Data Exploration
+                </button>
+                <button class="tab-btn" data-tab="modelLab">
+                    <i class="fas fa-flask"></i> Model Lab
+                </button>
+                <button class="tab-btn" data-tab="comparison">
+                    <i class="fas fa-balance-scale"></i> Model Comparison
+                </button>
+                <button class="tab-btn" data-tab="forecast">
+                    <i class="fas fa-crystal-ball"></i> Future Forecast
+                </button>
+                <button class="tab-btn" data-tab="insights">
+                    <i class="fas fa-brain"></i> AI Insights
+                </button>
+                <button class="tab-btn" data-tab="analytics">
+                    <i class="fas fa-chart-pie"></i> Advanced Analytics
+                </button>
+            </nav>
+
+            <!-- Tab Content -->
+            <div class="tab-pane active" id="overview">
+                <h2 class="section-title">Performance Overview</h2>
+                <p class="section-description">Real-time performance metrics and model comparison across all configured forecasting algorithms.</p>
+                
+                <!-- Metrics Grid -->
+                <div class="metrics-grid" id="overviewMetrics">
+                    <div class="metric-card">
+                        <div class="metric-label">Best Model MAPE</div>
+                        <div class="metric-value" id="bestMAPE">-</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-arrow-down"></i> Lower is better
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Avg. Model Accuracy</div>
+                        <div class="metric-value" id="avgAccuracy">-</div>
+                        <div class="metric-change">
+                            <i class="fas fa-info-circle"></i> Across all models
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Top Performer</div>
+                        <div class="metric-value" id="topModel" style="font-size: 1.25rem;">-</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-trophy"></i> Best model
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Models Trained</div>
+                        <div class="metric-value" id="modelsTrained">0/4</div>
+                        <div class="metric-change">
+                            <i class="fas fa-chart-line"></i> Ready to analyze
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Comparison Chart -->
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fas fa-chart-area"></i>
+                            Actual vs Predicted Sales - All Models
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="btn-icon" title="Download Chart">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="btn-icon" title="Fullscreen">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="overviewChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Performance Table -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Detailed Performance Metrics</h3>
+                    </div>
+                    <table class="data-table" id="metricsTable">
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>MAPE (%)</th>
+                                <th>WAPE (%)</th>
+                                <th>MAE</th>
+                                <th>RMSE</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="metricsTableBody">
+                            <tr>
+                                <td colspan="6" class="text-center" style="padding: 2rem; color: var(--text-tertiary);">
+                                    <i class="fas fa-info-circle"></i> Run analysis to see results
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Data Exploration Tab -->
+            <div class="tab-pane" id="dataExploration">
+                <h2 class="section-title">Data Exploration & Feature Engineering</h2>
+                <p class="section-description">Comprehensive analysis of your sales data with advanced feature engineering insights.</p>
+                
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fas fa-chart-line"></i>
+                            Historical Sales Trend
+                        </h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="historicalChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Data Points</div>
+                        <div class="metric-value" id="dataPointsCount">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Date Range</div>
+                        <div class="metric-value" id="dateRange" style="font-size: 0.875rem;">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Mean Sales</div>
+                        <div class="metric-value" id="meanSales">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Std. Deviation</div>
+                        <div class="metric-value" id="stdSales">-</div>
+                    </div>
+                </div>
+
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fas fa-layer-group"></i>
+                            Feature Engineering Overview
+                        </h3>
+                    </div>
+                    <div id="featuresOverview" style="padding: 1rem;">
+                        <p style="color: var(--text-tertiary); text-align: center;">Loading features...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Lab Tab -->
+            <div class="tab-pane" id="modelLab">
+                <h2 class="section-title">Individual Model Testing Laboratory</h2>
+                <p class="section-description">Fine-tune and test each forecasting model independently with custom parameters.</p>
+                
+                <div class="model-lab-selector">
+                    <button class="model-select-btn active" data-model="naive">
+                        <i class="fas fa-chart-line"></i><br>Naïve Model
+                    </button>
+                    <button class="model-select-btn" data-model="arima">
+                        <i class="fas fa-wave-square"></i><br>ARIMA
+                    </button>
+                    <button class="model-select-btn" data-model="rf">
+                        <i class="fas fa-tree"></i><br>Random Forest
+                    </button>
+                    <button class="model-select-btn" data-model="xgb">
+                        <i class="fas fa-rocket"></i><br>XGBoost
+                    </button>
+                </div>
+
+                <!-- Model Dashboards -->
+                <div class="model-dashboard active" data-model="naive">
+                    <div class="model-params-section">
+                        <h3 class="chart-title"><i class="fas fa-cog"></i> Naïve Model Configuration</h3>
+                        <div class="params-grid">
+                            <div class="param-group">
+                                <label for="naiveLag">Lag Periods</label>
+                                <input type="number" id="naiveLag" value="1" min="1" max="12">
+                                <small class="param-help">Number of previous periods to use</small>
+                            </div>
+                        </div>
+                        <button class="btn-primary mt-3" id="trainNaive">
+                            <i class="fas fa-play"></i> Train Naïve Model
+                        </button>
+                    </div>
+                    <div class="model-results-section" id="naiveResults">
+                        <div class="empty-state">
+                            <i class="fas fa-chart-bar"></i>
+                            <p>Train the model to see results and predictions</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="model-dashboard" data-model="arima">
+                    <div class="model-params-section">
+                        <h3 class="chart-title"><i class="fas fa-cog"></i> ARIMA Configuration</h3>
+                        <div class="params-grid">
+                            <div class="param-group">
+                                <label for="arimaP">AR Order (p)</label>
+                                <input type="number" id="arimaP" value="1" min="0" max="5">
+                                <small class="param-help">Auto-regressive terms</small>
+                            </div>
+                            <div class="param-group">
+                                <label for="arimaD">Differencing (d)</label>
+                                <input type="number" id="arimaD" value="1" min="0" max="2">
+                                <small class="param-help">Degree of differencing</small>
+                            </div>
+                            <div class="param-group">
+                                <label for="arimaQ">MA Order (q)</label>
+                                <input type="number" id="arimaQ" value="1" min="0" max="5">
+                                <small class="param-help">Moving average terms</small>
+                            </div>
+                        </div>
+                        <button class="btn-primary mt-3" id="trainArima">
+                            <i class="fas fa-play"></i> Train ARIMA Model
+                        </button>
+                    </div>
+                    <div class="model-results-section" id="arimaResults">
+                        <div class="empty-state">
+                            <i class="fas fa-chart-bar"></i>
+                            <p>Train the model to see results and predictions</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="model-dashboard" data-model="rf">
+                    <div class="model-params-section">
+                        <h3 class="chart-title"><i class="fas fa-cog"></i> Random Forest Configuration</h3>
+                        <div class="params-grid">
+                            <div class="param-group">
+                                <label for="rfEstimators">Number of Trees</label>
+                                <input type="number" id="rfEstimators" value="100" min="10" max="500" step="10">
+                                <small class="param-help">More trees = better accuracy</small>
+                            </div>
+                            <div class="param-group">
+                                <label for="rfDepth">Max Depth</label>
+                                <input type="number" id="rfDepth" value="10" min="3" max="30">
+                                <small class="param-help">Maximum tree depth</small>
+                            </div>
+                        </div>
+                        <button class="btn-primary mt-3" id="trainRF">
+                            <i class="fas fa-play"></i> Train Random Forest
+                        </button>
+                    </div>
+                    <div class="model-results-section" id="rfResults">
+                        <div class="empty-state">
+                            <i class="fas fa-chart-bar"></i>
+                            <p>Train the model to see results and predictions</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="model-dashboard" data-model="xgb">
+                    <div class="model-params-section">
+                        <h3 class="chart-title"><i class="fas fa-cog"></i> XGBoost Configuration</h3>
+                        <div class="params-grid">
+                            <div class="param-group">
+                                <label for="xgbEstimators">Number of Estimators</label>
+                                <input type="number" id="xgbEstimators" value="100" min="10" max="500" step="10">
+                                <small class="param-help">Boosting rounds</small>
+                            </div>
+                            <div class="param-group">
+                                <label for="xgbLR">Learning Rate</label>
+                                <input type="number" id="xgbLR" value="0.1" min="0.01" max="0.3" step="0.01">
+                                <small class="param-help">Step size shrinkage</small>
+                            </div>
+                            <div class="param-group">
+                                <label for="xgbDepth">Max Depth</label>
+                                <input type="number" id="xgbDepth" value="6" min="3" max="15">
+                                <small class="param-help">Maximum tree depth</small>
+                            </div>
+                        </div>
+                        <button class="btn-primary mt-3" id="trainXGB">
+                            <i class="fas fa-play"></i> Train XGBoost
+                        </button>
+                    </div>
+                    <div class="model-results-section" id="xgbResults">
+                        <div class="empty-state">
+                            <i class="fas fa-chart-bar"></i>
+                            <p>Train the model to see results and predictions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Tab -->
+            <div class="tab-pane" id="comparison">
+                <h2 class="section-title">Model Performance Comparison</h2>
+                <p class="section-description">Side-by-side comparison of all forecasting models with customizable performance thresholds.</p>
+                
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fas fa-chart-bar"></i>
+                            Model Comparison Chart
+                        </h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="model-params-section">
+                    <h3 class="chart-title"><i class="fas fa-sliders-h"></i> Performance Thresholds</h3>
+                    <div class="params-grid">
+                        <div class="param-group">
+                            <label for="mapeThreshold">MAPE Threshold (%)</label>
+                            <div class="slider-container">
+                                <input type="range" id="mapeThreshold" class="slider" min="1" max="30" value="15">
+                                <span class="slider-value" id="mapeThresholdValue">15%</span>
+                            </div>
+                            <small class="param-help">Models below this threshold pass</small>
+                        </div>
+                        <div class="param-group">
+                            <label for="wapeThreshold">WAPE Threshold (%)</label>
+                            <div class="slider-container">
+                                <input type="range" id="wapeThreshold" class="slider" min="1" max="30" value="15">
+                                <span class="slider-value" id="wapeThresholdValue">15%</span>
+                            </div>
+                            <small class="param-help">Weighted accuracy threshold</small>
+                        </div>
+                    </div>
+                    <button class="btn-primary mt-3" id="applyThreshold">
+                        <i class="fas fa-filter"></i> Apply Threshold Filter
+                    </button>
+                </div>
+
+                <div id="thresholdResults"></div>
+            </div>
+
+            <!-- Forecast Tab -->
+            <div class="tab-pane" id="forecast">
+                <h2 class="section-title">Future Sales Forecast</h2>
+                <p class="section-description">Generate forward-looking predictions with scenario analysis and confidence intervals.</p>
+                
+                <div class="model-params-section">
+                    <h3 class="chart-title"><i class="fas fa-cog"></i> Forecast Configuration</h3>
+                    <div class="params-grid">
+                        <div class="param-group">
+                            <label for="forecastModel">Select Model</label>
+                            <select id="forecastModel" style="padding: 0.625rem; border: 1px solid var(--border-medium); border-radius: var(--radius-md);">
+                                <option value="best">Best Performing Model</option>
+                                <option value="Naive">Naïve Model</option>
+                                <option value="ARIMA">ARIMA</option>
+                                <option value="Random_Forest">Random Forest</option>
+                                <option value="XGBoost">XGBoost</option>
+                            </select>
+                        </div>
+                        <div class="param-group">
+                            <label for="forecastMonths">Forecast Periods</label>
+                            <input type="number" id="forecastMonths" value="3" min="1" max="12">
+                            <small class="param-help">Months to predict forward</small>
+                        </div>
+                    </div>
+                    <button class="btn-primary mt-3" id="generateForecast">
+                        <i class="fas fa-magic"></i> Generate Forecast
+                    </button>
+                </div>
+
+                <div class="chart-section" id="forecastChartSection" style="display: none;">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fas fa-crystal-ball"></i>
+                            Future Sales Projection
+                        </h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="forecastChart"></canvas>
+                    </div>
+                </div>
+
+                <div id="scenariosSection" style="display: none;">
+                    <h3 class="chart-title mt-4"><i class="fas fa-chart-area"></i> Scenario Analysis</h3>
+                    <div class="scenarios-grid" id="scenariosGrid"></div>
+                </div>
+            </div>
+
+            <!-- AI Insights Tab -->
+            <div class="tab-pane" id="insights">
+                <h2 class="section-title">AI-Powered Business Insights</h2>
+                <p class="section-description">Advanced interpretation and recommendations generated by Google Gemini 2.5 Flash AI.</p>
+                
+                <div class="ai-section">
+                    <div class="ai-header">
+                        <div class="ai-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="ai-title">
+                            <h3>Gemini 2.5 Flash Analysis</h3>
+                            <p>Intelligent interpretation of forecasting results and strategic recommendations</p>
+                        </div>
+                        <button class="btn-primary" id="generateInsights">
+                            <i class="fas fa-sparkles"></i> Generate Insights
+                        </button>
+                    </div>
+                    <div class="ai-content" id="aiInsightsContent">
+                        <div class="empty-state">
+                            <i class="fas fa-brain"></i>
+                            <p>Run analysis first, then generate AI insights to receive intelligent interpretations and business recommendations.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Analytics Tab -->
+            <div class="tab-pane" id="analytics">
+                <h2 class="section-title">Advanced Analytics & Diagnostics</h2>
+                <p class="section-description">Deep-dive analytics including seasonality decomposition, feature importance, and quality metrics.</p>
+                
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fas fa-chart-pie"></i>
+                            Seasonal Decomposition
+                        </h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="seasonalityChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fas fa-chart-bar"></i>
+                            Feature Importance (Best ML Model)
+                        </h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="featureImportanceChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Trend Strength</div>
+                        <div class="metric-value" id="trendStrength">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Seasonality Detected</div>
+                        <div class="metric-value" id="seasonalityDetected">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Best Feature</div>
+                        <div class="metric-value" id="bestFeature" style="font-size: 1rem;">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Model Consensus</div>
+                        <div class="metric-value" id="modelConsensus">-</div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- CSV Upload Modal -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    Upload Sales Data
+                </h2>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-file-csv upload-icon"></i>
+                    <h3>Drag & Drop CSV File</h3>
+                    <p>or</p>
+                    <button class="btn-browse" id="browseBtn">
+                        <i class="fas fa-folder-open"></i>
+                        Browse Files
+                    </button>
+                    <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+                    <p id="selectedFileName" style="margin-top: 1rem; color: var(--primary-blue); font-weight: 600;"></p>
+                </div>
+
+                <div class="upload-requirements">
+                    <h4><i class="fas fa-info-circle"></i> CSV Requirements</h4>
+                    <ul>
+                        <li>Must contain <code>Month</code> column (YYYY-MM format)</li>
+                        <li>Must contain <code>Sales</code> column (numeric values)</li>
+                        <li>Optional: <code>Temperature</code>, <code>Marketing_Spend</code>, <code>Holiday_Season</code></li>
+                        <li>Maximum file size: 16MB</li>
+                    </ul>
+                </div>
+
+                <button class="btn-primary mt-4" id="uploadSubmit" style="width: 100%;">
+                    <i class="fas fa-check"></i>
+                    Upload and Load Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-icon" id="toastIcon"></div>
+        <div class="toast-content">
+            <div class="toast-title" id="toastTitle"></div>
+            <div class="toast-message" id="toastMessage"></div>
+        </div>
+        <button class="toast-close" id="toastClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Main JavaScript -->
+    <script src="main.js"></script>
+</body>
+</html>
