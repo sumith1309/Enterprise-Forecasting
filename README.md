@@ -26,6 +26,7 @@
 - [Quick Start](#-quick-start)
 - [Installation](#-installation)
 - [Usage Guide](#-usage-guide)
+  - [Synthetic Sales Data Generator](#15-synthetic-sales-data-generator)
 - [API Documentation](#-api-documentation)
 - [Model Details](#-model-details)
 - [Dashboard Features](#-dashboard-features)
@@ -47,6 +48,7 @@ The **Enterprise Forecasting Platform** is a comprehensive, production-ready sol
 - 📈 **Advanced Analytics**: Seasonality detection, feature importance, trend analysis
 - 🔄 **Real-Time Processing**: Dynamic model training and forecasting
 - 📥 **Data Import/Export**: CSV upload and export functionality
+- 🛒 **Synthetic Data Generator**: Built-in tool to generate test datasets with customizable parameters
 - 🎨 **Enterprise UI/UX**: Modern, responsive, and intuitive design
 
 ---
@@ -356,6 +358,380 @@ Month,Sales
 2023-03-01,22000
 ...
 ```
+
+### 1.5. Synthetic Sales Data Generator
+
+Need test data? Use our built-in **Advanced Sales Forecasting Data Generator** to create synthetic datasets with customizable parameters:
+
+**Features:**
+- 📅 **Custom Date Range**: Select start and end years
+- 💰 **Base Sales**: Set initial sales amount
+- 📈 **Trend Control**: Adjust annual growth percentage
+- 🎯 **Seasonality**: Choose Low, Medium, or High seasonality strength
+- 🔧 **Optional Columns**: Add Temperature, Marketing Spend, Holiday indicators
+- 📊 **Live Preview**: See generated data before downloading
+- 📥 **CSV Export**: Download ready-to-use CSV files
+
+**How to Use:**
+
+1. Copy the HTML code below and save it as `data_generator.html`
+2. Open it in your web browser
+3. Adjust parameters:
+   - **Start/End Year**: Date range for your dataset
+   - **Base Sales**: Starting sales amount
+   - **Annual Growth**: Year-over-year growth percentage
+   - **Seasonality Strength**: How pronounced seasonal patterns are
+   - **Optional Columns**: Additional features (Temperature, Marketing, Holiday)
+4. Click **"Generate Data"** to preview
+5. Click **"Download CSV"** to save the file
+6. Upload the CSV to the dashboard using the "Upload Data" button
+
+**Data Generator HTML:**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synthetic Sales Data Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input, select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #downloadBtn {
+            background-color: #2196F3;
+        }
+        #downloadBtn:hover {
+            background-color: #0b7dda;
+        }
+        .preview {
+            margin-top: 30px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .stats {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 Advanced Sales Forecasting Data Generator</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="startYear">Start Year:</label>
+                <input type="number" id="startYear" value="2020" min="2000" max="2024">
+            </div>
+            
+            <div class="control-group">
+                <label for="endYear">End Year:</label>
+                <input type="number" id="endYear" value="2024" min="2000" max="2024">
+            </div>
+            
+            <div class="control-group">
+                <label for="baseSales">Base Sales ($):</label>
+                <input type="number" id="baseSales" value="100000" min="1000">
+            </div>
+            
+            <div class="control-group">
+                <label for="trend">Annual Growth (%):</label>
+                <input type="number" id="trend" value="5" min="-50" max="100">
+            </div>
+            
+            <div class="control-group">
+                <label for="seasonality">Seasonality Strength:</label>
+                <select id="seasonality">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="includeOptional">Include Optional Columns:</label>
+                <select id="includeOptional">
+                    <option value="all" selected>All (Temperature, Marketing, Holiday)</option>
+                    <option value="temp">Temperature Only</option>
+                    <option value="marketing">Marketing Only</option>
+                    <option value="holiday">Holiday Only</option>
+                    <option value="none">None</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <button onclick="generateData()">Generate Data</button>
+            <button id="downloadBtn" onclick="downloadCSV()" style="display:none;">Download CSV</button>
+        </div>
+        
+        <div id="stats" class="stats" style="display:none;"></div>
+        
+        <div class="preview" id="preview"></div>
+    </div>
+    <script>
+        let generatedData = [];
+        function generateData() {
+            const startYear = parseInt(document.getElementById('startYear').value);
+            const endYear = parseInt(document.getElementById('endYear').value);
+            const baseSales = parseFloat(document.getElementById('baseSales').value);
+            const annualGrowth = parseFloat(document.getElementById('trend').value) / 100;
+            const seasonality = document.getElementById('seasonality').value;
+            const includeOptional = document.getElementById('includeOptional').value;
+            
+            generatedData = [];
+            
+            // Seasonality factors
+            const seasonFactors = {
+                low: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.1],
+                medium: [0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.2, 1.1, 1.0, 0.9, 0.8, 1.4],
+                high: [0.6, 0.7, 0.9, 1.1, 1.3, 1.5, 1.4, 1.2, 1.0, 0.8, 0.7, 1.8]
+            };
+            
+            const monthlyFactors = seasonFactors[seasonality];
+            
+            for (let year = startYear; year <= endYear; year++) {
+                for (let month = 1; month <= 12; month++) {
+                    const yearsSinceStart = year - startYear;
+                    const monthStr = month.toString().padStart(2, '0');
+                    const dateStr = `${year}-${monthStr}`;
+                    
+                    // Calculate sales with trend and seasonality
+                    const trendFactor = Math.pow(1 + annualGrowth, yearsSinceStart);
+                    const seasonalFactor = monthlyFactors[month - 1];
+                    const randomNoise = 0.9 + Math.random() * 0.2; // ±10% random variation
+                    
+                    let sales = baseSales * trendFactor * seasonalFactor * randomNoise;
+                    
+                    const row = {
+                        Month: dateStr,
+                        Sales: Math.round(sales)
+                    };
+                    
+                    // Add optional columns based on selection
+                    if (includeOptional === 'all' || includeOptional === 'temp') {
+                        // Temperature varies by month (seasonal pattern)
+                        const baseTemp = [30, 35, 45, 55, 65, 75, 80, 78, 70, 58, 45, 35][month - 1];
+                        row.Temperature = baseTemp + (Math.random() - 0.5) * 10;
+                        row.Temperature = Math.round(row.Temperature * 10) / 10;
+                    }
+                    
+                    if (includeOptional === 'all' || includeOptional === 'marketing') {
+                        // Marketing spend correlates with expected sales
+                        const marketingBase = sales * 0.05; // 5% of sales
+                        const marketingVariation = 0.8 + Math.random() * 0.4; // ±20% variation
+                        row.Marketing_Spend = Math.round(marketingBase * marketingVariation);
+                    }
+                    
+                    if (includeOptional === 'all' || includeOptional === 'holiday') {
+                        // Holiday season indicator (November, December, and special months)
+                        row.Holiday_Season = (month === 11 || month === 12 || month === 2 || month === 7) ? 1 : 0;
+                    }
+                    
+                    // Adjust sales based on optional factors
+                    if (row.Temperature !== undefined) {
+                        // Higher temperature slightly increases sales (ice cream effect)
+                        sales *= (1 + (row.Temperature - 55) * 0.001);
+                    }
+                    
+                    if (row.Marketing_Spend !== undefined) {
+                        // Marketing spend increases sales
+                        sales *= (1 + row.Marketing_Spend / (baseSales * 0.5));
+                    }
+                    
+                    if (row.Holiday_Season !== undefined && row.Holiday_Season === 1) {
+                        // Holiday season boost
+                        sales *= 1.2;
+                    }
+                    
+                    row.Sales = Math.round(sales);
+                    generatedData.push(row);
+                }
+            }
+            
+            displayPreview();
+            displayStats();
+            document.getElementById('downloadBtn').style.display = 'inline-block';
+        }
+        
+        function displayPreview() {
+            const preview = document.getElementById('preview');
+            const maxRows = 20;
+            
+            let html = '<h3>Data Preview (first 20 rows)</h3>';
+            html += '<table>';
+            
+            // Header
+            const columns = Object.keys(generatedData[0]);
+            html += '<tr>';
+            columns.forEach(col => {
+                html += `<th>${col}</th>`;
+            });
+            html += '</tr>';
+            
+            // Data rows
+            for (let i = 0; i < Math.min(maxRows, generatedData.length); i++) {
+                html += '<tr>';
+                columns.forEach(col => {
+                    let value = generatedData[i][col];
+                    if (col === 'Sales' || col === 'Marketing_Spend') {
+                        value = '$' + value.toLocaleString();
+                    } else if (col === 'Temperature') {
+                        value = value + '°F';
+                    }
+                    html += `<td>${value}</td>`;
+                });
+                html += '</tr>';
+            }
+            
+            html += '</table>';
+            
+            if (generatedData.length > maxRows) {
+                html += `<p style="text-align: center; color: #666;">... and ${generatedData.length - maxRows} more rows</p>`;
+            }
+            
+            preview.innerHTML = html;
+        }
+        
+        function displayStats() {
+            const stats = document.getElementById('stats');
+            const salesValues = generatedData.map(row => row.Sales);
+            const totalSales = salesValues.reduce((a, b) => a + b, 0);
+            const avgSales = totalSales / salesValues.length;
+            const maxSales = Math.max(...salesValues);
+            const minSales = Math.min(...salesValues);
+            
+            let statsHTML = '<h3>📊 Dataset Statistics</h3>';
+            statsHTML += `<p><strong>Total Rows:</strong> ${generatedData.length}</p>`;
+            statsHTML += `<p><strong>Date Range:</strong> ${generatedData[0].Month} to ${generatedData[generatedData.length - 1].Month}</p>`;
+            statsHTML += `<p><strong>Total Sales:</strong> $${totalSales.toLocaleString()}</p>`;
+            statsHTML += `<p><strong>Average Monthly Sales:</strong> $${Math.round(avgSales).toLocaleString()}</p>`;
+            statsHTML += `<p><strong>Max Monthly Sales:</strong> $${maxSales.toLocaleString()}</p>`;
+            statsHTML += `<p><strong>Min Monthly Sales:</strong> $${minSales.toLocaleString()}</p>`;
+            
+            const columns = Object.keys(generatedData[0]);
+            statsHTML += `<p><strong>Columns:</strong> ${columns.join(', ')}</p>`;
+            
+            stats.innerHTML = statsHTML;
+            stats.style.display = 'block';
+        }
+        
+        function downloadCSV() {
+            if (generatedData.length === 0) {
+                alert('Please generate data first!');
+                return;
+            }
+            
+            // Convert to CSV
+            const columns = Object.keys(generatedData[0]);
+            let csv = columns.join(',') + '\n';
+            
+            generatedData.forEach(row => {
+                const values = columns.map(col => row[col]);
+                csv += values.join(',') + '\n';
+            });
+            
+            // Create download link
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'synthetic_sales_data.csv');
+            link.style.display = 'none';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Generate initial data on page load
+        window.onload = function() {
+            generateData();
+        };
+    </script>
+</body>
+</html>
+```
+
+**Tips for Testing:**
+- Use **Low seasonality** for stable businesses (utilities, subscriptions)
+- Use **Medium seasonality** for retail, e-commerce
+- Use **High seasonality** for seasonal products (ice cream, holiday items)
+- Test with different **growth rates** to see how models handle trends
+- Generate datasets with **optional columns** to test feature engineering
 
 ### 2. Running Comprehensive Analysis
 
